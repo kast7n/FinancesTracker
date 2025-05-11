@@ -1,0 +1,35 @@
+<div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editAccountModalLabel">Edit Account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" asp-page-handler="Edit">
+        <div class="modal-body">
+          <input type="hidden" id="editAccountId" name="Account.AccountID">
+          <div class="mb-3">
+            <label for="editAccountName" class="form-label">Name</label>
+            <input type="text" class="form-control rounded-pill" id="editAccountName" name="Account.Name" required maxlength="100">
+          </div>
+          <div class="mb-3">
+            <label for="editAccountBalance" class="form-label">Balance</label>
+            <input type="number" class="form-control rounded-pill" id="editAccountBalance" name="Account.Balance" min="0" step="0.01" required>
+          </div>
+          <div class="mb-3">
+            <label for="editAccountCurrency" class="form-label">Currency</label>
+            <select class="form-select rounded-pill" id="editAccountCurrency" name="Account.Currency" required>
+              <option value="LBP">LBP</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary rounded-pill">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

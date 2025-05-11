@@ -1,0 +1,3 @@
+// Chart.js v4.4.0 CDN for analytics dashboard
+// Add this to _Layout.cshtml or Index.cshtml head if not present
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

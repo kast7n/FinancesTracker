@@ -1,0 +1,35 @@
+<div class="modal fade" id="deleteAccountsModal" tabindex="-1" aria-labelledby="deleteAccountsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteAccountsModalLabel">Delete Accounts</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="deleteAccountsForm">
+        <div class="modal-body">
+          <p>Do you want to delete the following accounts?</p>
+          <ul id="accountsToDeleteList" class="list-group mb-3">
+            <!-- List items populated by JS -->
+          </ul>
+          <div class="alert alert-warning rounded-3" role="alert">
+            This action cannot be undone.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger rounded-pill">Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  // TODO: Populate #accountsToDeleteList with selected account names before showing modal
+  document.getElementById('deleteAccountsForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    // TODO: AJAX call to delete accounts, then close modal and refresh table
+    const modal = bootstrap.Modal.getInstance(document.getElementById('deleteAccountsModal'));
+    modal.hide();
+    // Show success toast or handle errors
+  });
+</script>

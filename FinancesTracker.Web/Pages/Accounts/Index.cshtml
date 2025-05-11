@@ -1,0 +1,187 @@
+﻿@page
+@model FinancesTracker.Web.Pages.Accounts.IndexModel
+@using FinancesTracker.Application.DTOs
+@{
+    ViewData["Title"] = "Accounts";
+}
+
+<!-- Main Container -->
+<div class="container py-4">
+    <h2 class="mb-4">Accounts</h2>
+    <form id="accountFilters" class="row g-3 mb-3">
+        <div class="col-md-4">
+            <input type="text" class="form-control" id="searchInput" placeholder="Search by name or currency...">
+        </div>
+        <div class="col-md-2">
+            <input type="number" class="form-control" id="minBalanceInput" placeholder="Min Balance">
+        </div>
+        <div class="col-md-2">
+            <input type="number" class="form-control" id="maxBalanceInput" placeholder="Max Balance">
+        </div>
+        <div class="col-md-4 d-flex gap-2 justify-content-end align-items-center">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addAccountModal">
+                <i class="bi bi-plus-circle"></i> Add
+            </button>
+            <button type="button" class="btn btn-warning" id="editAccountBtn">
+                <i class="bi bi-pencil-square"></i> Edit
+            </button>
+            <button type="button" class="btn btn-danger" id="deleteAccountsBtn">
+                <i class="bi bi-trash"></i> Delete
+            </button>
+            <button type="button" class="btn btn-secondary" id="printBtn">
+                <i class="bi bi-printer"></i> Print
+            </button>
+        </div>
+    </form>
+    <table class="table table-bordered table-striped table-hover align-middle" id="accountsTable">
+        <thead>
+            <tr>
+                <th></th>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Balance</th>
+                <th>Currency</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be rendered by JS -->
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination" id="accountsPagination"></ul>
+    </nav>
+</div>
+
+<script>
+    window.accountsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Accounts));
+</script>
+
+<!-- Toast for Edit Selection Error -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div id="editSelectionToast" class="toast align-items-center text-bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Please select exactly one account to edit.
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast for operation feedback -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div id="operationToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="operationToastBody">
+                <!-- Message will be set by JS -->
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+@* Add Account Modal: Use server-side form *@
+<div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-4 bg-dark text-light border-0">
+      <div class="modal-header border-0" style="background:#23272b;">
+        <h5 class="modal-title" id="addAccountModalLabel">Add Account</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" asp-page-handler="Add">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="accountName" class="form-label">Name</label>
+            <input type="text" class="form-control rounded-pill bg-dark text-light border-secondary" id="accountName" name="Account.Name" required maxlength="100" />
+          </div>
+          <div class="mb-3">
+            <label for="accountBalance" class="form-label">Balance</label>
+            <input type="number" class="form-control rounded-pill bg-dark text-light border-secondary" id="accountBalance" name="Account.Balance" min="0" step="0.01" required />
+          </div>
+          <div class="mb-3">
+            <label for="accountCurrency" class="form-label">Currency</label>
+            <select class="form-select rounded-pill bg-dark text-light border-secondary" id="accountCurrency" name="Account.Currency" required>
+              <option value="LBP">LBP</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer border-0" style="background:#23272b;">
+          <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary rounded-pill">Add Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+@* Edit Account Modal: Use server-side form *@
+<div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editAccountModalLabel">Edit Account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" asp-page-handler="Edit">
+        <div class="modal-body">
+          <input type="hidden" id="editAccountId" name="Account.AccountID" />
+          <div class="mb-3">
+            <label for="editAccountName" class="form-label">Name</label>
+            <input type="text" class="form-control rounded-pill" id="editAccountName" name="Account.Name" required maxlength="100" />
+          </div>
+          <div class="mb-3">
+            <label for="editAccountBalance" class="form-label">Balance</label>
+            <input type="number" class="form-control rounded-pill" id="editAccountBalance" name="Account.Balance" min="0" step="0.01" required />
+          </div>
+          <div class="mb-3">
+            <label for="editAccountCurrency" class="form-label">Currency</label>
+            <select class="form-select rounded-pill" id="editAccountCurrency" name="Account.Currency" required>
+              <option value="LBP">LBP</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary rounded-pill">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+@* Delete Accounts Modal: Use server-side form *@
+<div class="modal fade" id="deleteAccountsModal" tabindex="-1" aria-labelledby="deleteAccountsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteAccountsModalLabel">Delete Accounts</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="deleteAccountsForm" method="post" asp-page-handler="Delete">
+        <input type="hidden" id="deleteAccountIds" name="AccountIds" />
+        <div class="modal-body">
+          <p>Do you want to delete the following accounts?</p>
+          <ul id="accountsToDeleteList" class="list-group mb-3">
+            <!-- List items populated by JS or server -->
+          </ul>
+          <div class="alert alert-warning rounded-3" role="alert">
+            This action cannot be undone.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger rounded-pill">Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/accounts-index.js"></script>
+}

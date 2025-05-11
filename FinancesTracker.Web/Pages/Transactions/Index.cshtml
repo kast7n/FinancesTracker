@@ -1,0 +1,106 @@
+@page
+@model FinancesTracker.Web.Pages.Transactions.IndexModel
+@{
+    ViewData["Title"] = "Transactions";
+    var vm = Model.ViewModel;
+}
+<div class="container py-4">
+    <h2 class="mb-4">Transactions</h2>
+    <form id="filterForm" class="row g-3 mb-3">
+        <div class="col-md-3">
+            <input type="text" class="form-control" id="searchInput" placeholder="Search by description or account...">
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" id="categoryInput">
+                <option value="">All Categories</option>
+                @foreach (var cat in vm.Categories ?? new List<string>()) {
+                    <option value="@cat">@cat</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" id="accountInput">
+                <option value="">All Accounts</option>
+                @foreach (var acc in vm.Accounts ?? new List<FinancesTracker.Application.DTOs.AccountDto>()) {
+                    <option value="@acc.Name">@acc.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" id="currencyInput">
+                <option value="">All Currencies</option>
+                @foreach (var cur in vm.Currencies ?? new List<string>()) {
+                    <option value="@cur">@cur</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3 text-end d-flex gap-2 justify-content-end align-items-center">
+            <button type="button" class="btn btn-success" id="addTransactionBtn">
+                <i class="bi bi-plus-circle"></i> Add
+            </button>
+            <button type="button" class="btn btn-warning" id="editTransactionBtn">
+                <i class="bi bi-pencil-square"></i> Edit
+            </button>
+            <button type="button" class="btn btn-danger" id="deleteTransactionsBtn">
+                <i class="bi bi-trash"></i> Delete
+            </button>
+            <button type="button" class="btn btn-secondary" id="printBtn">
+                <i class="bi bi-printer"></i> Print
+            </button>
+        </div>
+    </form>
+    <table class="table table-bordered table-striped table-hover align-middle" id="transactionsTable">
+        <thead>
+            <tr>
+                <th></th>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Account</th>
+                <th>Category</th>
+                <th>Currency</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows rendered by JS -->
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination" id="transactionsPagination"></ul>
+    </nav>
+</div>
+<script>
+    window.transactionsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(vm.Transactions));
+    window.categoriesList = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(vm.Categories));
+    window.accountsList = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(vm.Accounts));
+    window.currenciesList = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(vm.Currencies));
+</script>
+@await Html.PartialAsync("_TransactionModal", null, new ViewDataDictionary(ViewData) {
+    { "ModalId", "addTransactionModal" },
+    { "ModalLabelId", "addTransactionModalLabel" },
+    { "FormId", "addTransactionForm" },
+    { "ModalTitle", "Add Transaction" },
+    { "SubmitText", "Add" },
+    { "ShowId", false }
+})
+@await Html.PartialAsync("_TransactionModal", null, new ViewDataDictionary(ViewData) {
+    { "ModalId", "editTransactionModal" },
+    { "ModalLabelId", "editTransactionModalLabel" },
+    { "FormId", "editTransactionForm" },
+    { "ModalTitle", "Edit Transaction" },
+    { "SubmitText", "Save Changes" },
+    { "ShowId", true }
+})
+@await Html.PartialAsync("_DeleteTransactionsModal")
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="editSelectionToast" class="toast align-items-center text-bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">Please select exactly one transaction to edit.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/js/transactions-index.js"></script>
+}

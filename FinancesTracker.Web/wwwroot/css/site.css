@@ -1,0 +1,147 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  background: #181a1b;
+  color: #e9ecef;
+}
+
+.sidebar {
+  min-height: 100vh;
+  background: #111214;
+  color: #e9ecef;
+  width: 240px;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 1030;
+  transition: left 0.2s;
+}
+
+.sidebar .nav-link {
+  color: #adb5bd;
+  border-radius: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sidebar .nav-link.active, .sidebar .nav-link:hover {
+  background: #23272b;
+  color: #0dcaf0;
+}
+
+.sidebar .sidebar-header {
+  font-size: 1.4rem;
+  font-weight: 600;
+  padding: 1.5rem 1.25rem 1rem 1.25rem;
+  color: #0dcaf0;
+  letter-spacing: 1px;
+}
+
+.main-content {
+  margin-left: 240px;
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  background: #181a1b;
+  min-height: 100vh;
+  transition: margin-left 0.2s;
+}
+
+.card, .modal-content, .table {
+  background: #23272b;
+  color: #e9ecef;
+  border-radius: 1rem;
+  border: none;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #23272b !important;
+  color: #0dcaf0;
+}
+
+.form-control, .form-select {
+  background: #23272b;
+  color: #e9ecef;
+  border: 1px solid #343a40;
+}
+
+.form-control:focus, .form-select:focus {
+  background: #23272b;
+  color: #fff;
+  border-color: #0dcaf0;
+  box-shadow: 0 0 0 0.2rem rgba(13,202,240,.25);
+}
+
+.btn-primary, .btn-outline-primary {
+  border-radius: 2rem;
+}
+
+.btn-primary {
+  background: #0dcaf0;
+  border: none;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background: #31d2f2;
+}
+
+.btn-outline-primary {
+  color: #0dcaf0;
+  border-color: #0dcaf0;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+  background: #0dcaf0;
+  color: #181a1b;
+}
+
+@media (max-width: 991.98px) {
+  .sidebar {
+    left: -240px;
+  }
+  .sidebar.show {
+    left: 0;
+  }
+  .main-content {
+    margin-left: 0;
+  }
+  .sidebar-toggle {
+    display: block;
+  }
+}
+
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1040;
+  background: #0dcaf0;
+  color: #181a1b;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
+  align-items: center;
+  justify-content: center;
+}

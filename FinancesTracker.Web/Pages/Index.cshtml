@@ -1,0 +1,116 @@
+﻿@page
+@using FinancesTracker.Web.Pages
+@model FinancesTracker.Web.Pages.IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+    var incomeColor = "#4caf50";
+    var expenseColor = "#f44336";
+    var filters = new[] { "week", "month", "year" };
+    var filterLabels = new[] { "This Week", "This Month", "This Year" };
+}
+<div class="container py-4">
+    <h1 class="mb-4">Analytics Dashboard</h1>
+    <div class="mb-4 text-center">
+        <div class="btn-group" role="group" aria-label="Time Filter">
+            @for (int i = 0; i < filters.Length; i++)
+            {
+                var isActive = Model.TimeFilter == filters[i] ? "active" : "";
+                <a href="?filter=@filters[i]" class="btn btn-outline-primary @isActive">@filterLabels[i]</a>
+            }
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Balance</h5>
+                    <p class="display-6 fw-bold">@Model.TotalBalance.ToString("C")</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Income</h5>
+                    <p class="display-6 fw-bold text-success">@Model.TotalIncome.ToString("C")</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Expense</h5>
+                    <p class="display-6 fw-bold text-danger">@Model.TotalExpense.ToString("C")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Category Summary</h5>
+                    <table class="table table-sm table-bordered mb-0">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Type</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var cat in Model.CategorySummaries.OrderByDescending(c => c.Amount))
+                            {
+                                <tr>
+                                    <td>@cat.Category</td>
+                                    <td>@cat.Type</td>
+                                    <td class="text-end">@cat.Amount.ToString("C")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="card-title mb-0">Recent Transactions</h5>
+                    </div>
+                    <table class="table table-sm table-bordered mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Type</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var t in Model.TrendData.OrderByDescending(t => t.Date).Take(10))
+                            {
+                                <tr>
+                                    <td>@t.Date.ToString("yyyy-MM-dd")</td>
+                                    <td>
+                                        @Model.CategorySummaries.FirstOrDefault(c => c.Type == "Income" && c.Amount == t.Income)?.Category
+                                        @Model.CategorySummaries.FirstOrDefault(c => c.Type == "Expense" && c.Amount == t.Expense)?.Category
+                                    </td>
+                                    <td>
+                                        @(t.Income > 0 ? "Income" : t.Expense > 0 ? "Expense" : "")
+                                    </td>
+                                    <td class="text-end">
+                                        @(t.Income > 0 ? t.Income.ToString("C") : t.Expense > 0 ? t.Expense.ToString("C") : "")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+<!-- No charts, so no scripts needed -->
+}

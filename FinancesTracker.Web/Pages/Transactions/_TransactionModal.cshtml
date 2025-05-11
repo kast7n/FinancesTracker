@@ -1,0 +1,56 @@
+@* Unified Transaction Modal: use for both Add and Edit *@
+@{
+    var modalId = ViewData["ModalId"] as string ?? "transactionModal";
+    var modalLabelId = ViewData["ModalLabelId"] as string ?? "transactionModalLabel";
+    var formId = ViewData["FormId"] as string ?? "transactionForm";
+    var title = ViewData["Title"] as string ?? "Transaction";
+    var submitText = ViewData["SubmitText"] as string ?? "Save";
+    var showId = (ViewData["ShowId"] as bool?) ?? false;
+}
+<div class="modal fade" id="@modalId" tabindex="-1" aria-labelledby="@modalLabelId" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="@formId" method="post" asp-page-handler="@(showId ? "Update" : "Add")">
+        <div class="modal-header">
+          <h5 class="modal-title" id="@modalLabelId">@title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          @if (showId) {
+            <input type="hidden" id="editTransactionId" name="TransactionID" />
+          }
+          <div class="mb-3">
+            <label for="@formId.Replace("Form", "Type")" class="form-label">Type</label>
+            <select class="form-select" id="@formId.Replace("Form", "Type")" name="Type" required>
+              <option value="Income">Income</option>
+              <option value="Expense">Expense</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="@formId.Replace("Form", "Amount")" class="form-label">Amount</label>
+            <input type="number" class="form-control" id="@formId.Replace("Form", "Amount")" name="Amount" required />
+          </div>
+          <div class="mb-3">
+            <label for="@formId.Replace("Form", "Account")" class="form-label">Account</label>
+            <select class="form-select" id="@formId.Replace("Form", "Account")" name="AccountID" required>
+              <option value="">Select account...</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="@formId.Replace("Form", "Category")" class="form-label">Category</label>
+            <select class="form-select" id="@formId.Replace("Form", "Category")" name="Category"></select>
+          </div>
+          <div class="mb-3">
+            <label for="@formId.Replace("Form", "Date")" class="form-label">Date</label>
+            <input type="date" class="form-control" id="@formId.Replace("Form", "Date")" name="Date" required />
+          </div>
+          <input type="hidden" id="@formId.Replace("Form", "Notes")" name="Notes" />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">@submitText</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
